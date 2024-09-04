@@ -35,11 +35,18 @@ abstract class BaseExample : HidServicesListener {
 
         println("Platform architecture: " + com.sun.jna.Platform.ARCH)
         println("Resource prefix: " + com.sun.jna.Platform.RESOURCE_PREFIX)
-        println("Libusb activation: " + com.sun.jna.Platform.isLinux())
+        println(
+            "Libusb activation: " +
+                com.sun.jna.Platform
+                    .isLinux(),
+        )
     }
 
     fun waitAndShutdown(hidServices: HidServices) {
-        System.out.printf(ANSI_YELLOW + "Waiting 30s to demonstrate attach/detach handling. Watch for slow response after write if configured.%n" + ANSI_RESET)
+        System.out.printf(
+            ANSI_YELLOW + "Waiting 30s to demonstrate attach/detach handling. Watch for slow response after write if configured.%n" +
+                ANSI_RESET,
+        )
 
         // Stop the main thread to demonstrate attach and detach events
         sleepNoInterruption()

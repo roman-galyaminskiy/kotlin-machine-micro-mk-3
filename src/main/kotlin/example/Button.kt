@@ -1,6 +1,8 @@
 package example
 
-enum class Button(val id: Int) {
+enum class Button(
+    val id: Int,
+) {
     MASCHINE(0),
     STAR(1),
     BROWSE(2),
@@ -41,5 +43,5 @@ enum class Button(val id: Int) {
     SOLO(37),
     MUTE(38),
     ENCODER_PRESS(39),
-    ENCODER_TOUCH(40);
+    ENCODER_TOUCH(40),
 }

@@ -4,32 +4,38 @@ import javax.sound.midi.*
 
 const val DEVICE_NAME = "DOREMiDi-FFE7"
 
-class UiClass(private val mikroMk3: MikroMk3HidDevice) {
+class UiClass(
+    private val mikroMk3: MikroMk3HidDevice,
+) {
     val vc = VolcaSample()
     val midiDeviceInfos: Array<MidiDevice.Info> = MidiSystem.getMidiDeviceInfo()
-    val midiOutDevice = MidiSystem.getMidiDevice(midiDeviceInfos.firstOrNull {
-        it.name == DEVICE_NAME
-                && it.javaClass.name == "com.sun.media.sound.MidiOutDeviceProvider\$MidiOutDeviceInfo"
-    })
+    val midiOutDevice =
+        MidiSystem.getMidiDevice(
+            midiDeviceInfos.firstOrNull {
+                it.name == DEVICE_NAME &&
+                    it.javaClass.name == "com.sun.media.sound.MidiOutDeviceProvider\$MidiOutDeviceInfo"
+            },
+        )
 
-    private val padIndexToNumber = mapOf(
-        0 to 12,
-        1 to 13,
-        2 to 14,
-        3 to 15,
-        4 to 8,
-        5 to 9,
-        6 to 10,
-        7 to 11,
-        8 to 4,
-        9 to 5,
-        10 to 6,
-        11 to 7,
-        12 to 0,
-        13 to 1,
-        14 to 2,
-        15 to 3
-    )
+    private val padIndexToNumber =
+        mapOf(
+            0 to 12,
+            1 to 13,
+            2 to 14,
+            3 to 15,
+            4 to 8,
+            5 to 9,
+            6 to 10,
+            7 to 11,
+            8 to 4,
+            9 to 5,
+            10 to 6,
+            11 to 7,
+            12 to 0,
+            13 to 1,
+            14 to 2,
+            15 to 3,
+        )
 
     enum class Mode {
         PAD,
@@ -41,7 +47,7 @@ class UiClass(private val mikroMk3: MikroMk3HidDevice) {
         SELECT_PAD,
         SELECT_VOICE,
         COPY_FROM,
-        COPY_TO
+        COPY_TO,
     }
 
     enum class ParametersState {
@@ -98,7 +104,10 @@ class UiClass(private val mikroMk3: MikroMk3HidDevice) {
         }
     }
 
-    private fun handlePadPress(id: Int, velocity: Int?) {
+    private fun handlePadPress(
+        id: Int,
+        velocity: Int?,
+    ) {
         println("handlePadPress $id $velocity")
         when (mode) {
             Mode.MAPPING -> {
@@ -115,7 +124,7 @@ class UiClass(private val mikroMk3: MikroMk3HidDevice) {
                         padToVoiceMapping[mappingPadSelected] = padIndexToNumber[id]!!
                         println(padToVoiceMapping.joinToString(" "))
                         val myMsg = ShortMessage()
-                        myMsg.setMessage(ShortMessage.NOTE_ON, padIndexToNumber[id]!!, 42, 127);
+                        myMsg.setMessage(ShortMessage.NOTE_ON, padIndexToNumber[id]!!, 42, 127)
                         receiver.send(myMsg, -1)
                         display()
                         mappingState = MappingState.SELECT_PAD
@@ -171,7 +180,7 @@ class UiClass(private val mikroMk3: MikroMk3HidDevice) {
 
             Mode.PAD -> {
                 val myMsg = ShortMessage()
-                myMsg.setMessage(ShortMessage.NOTE_ON, padToVoiceMapping[id], 42, 127);
+                myMsg.setMessage(ShortMessage.NOTE_ON, padToVoiceMapping[id], 42, 127)
                 receiver.send(myMsg, -1)
                 pressedPads[id] = true
                 display()
@@ -190,7 +199,6 @@ class UiClass(private val mikroMk3: MikroMk3HidDevice) {
     private fun switchMode(mode: Mode) {
         this.mode = mode
         display()
-
     }
 
     private fun display() {
@@ -318,19 +326,19 @@ class UiClass(private val mikroMk3: MikroMk3HidDevice) {
             val paramValue = voice.parameters[parametersOrder[parametersSelectedParameter]!!.name]!!
             val myMsg = ShortMessage()
             println("chanel ${padToVoiceMapping[parametersActivePad]}, data ${paramValue + value}")
-            val newValue = if (paramValue + value > 127) {
-                127
-            } else if (paramValue + value < 0) {
-                0
-            } else {
-                paramValue + value
-            }
+            val newValue =
+                if (paramValue + value > 127) {
+                    127
+                } else if (paramValue + value < 0) {
+                    0
+                } else {
+                    paramValue + value
+                }
             voice.parameters[parametersOrder[parametersSelectedParameter]!!.name] = newValue
-            println("chanel ${padToVoiceMapping[parametersActivePad]}, data1 ${param.value} data2 ${newValue}")
-            myMsg.setMessage(ShortMessage.CONTROL_CHANGE, padToVoiceMapping[parametersActivePad], param.value, newValue);
+            println("chanel ${padToVoiceMapping[parametersActivePad]}, data1 ${param.value} data2 $newValue")
+            myMsg.setMessage(ShortMessage.CONTROL_CHANGE, padToVoiceMapping[parametersActivePad], param.value, newValue)
             receiver.send(myMsg, -1)
         }
-
     }
 
     fun setPadsLight(lights: Array<MikroMk3HidDevice.PadColor>) {

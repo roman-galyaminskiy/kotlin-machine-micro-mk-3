@@ -1,4 +1,3 @@
 package example
 
-class Editor {
-}
+class Editor

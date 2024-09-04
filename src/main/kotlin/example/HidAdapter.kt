@@ -1,11 +1,11 @@
 package example
 
 import org.hid4java.*
-import org.w3c.dom.events.Event
 import java.io.Closeable
 
-
-class HidAdapter : BaseExample(), Closeable {
+class HidAdapter :
+    BaseExample(),
+    Closeable {
     private val hidServices = HidManager.getHidServices()
 
     init {
@@ -18,10 +18,10 @@ class HidAdapter : BaseExample(), Closeable {
         println(ANSI_GREEN + "Enumerating attached devices..." + ANSI_RESET)
     }
 
-
-    fun getHidDevice(vendorId: Int, productId: Int): HidDevice {
-        return hidServices.getHidDevice(vendorId, productId, null)
-    }
+    fun getHidDevice(
+        vendorId: Int,
+        productId: Int,
+    ): HidDevice = hidServices.getHidDevice(vendorId, productId, null)
 
     override fun close() {
         waitAndShutdown(hidServices)
